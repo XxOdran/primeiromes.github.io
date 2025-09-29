@@ -32,11 +32,18 @@
 
   @media (max-width:768px){ header{font-size:1.6rem;padding:1.5rem;} .carousel-container{max-width:90vw;} .carousel-item img,.carousel-item video{max-height:70vh;} .message{font-size:1rem;padding:1rem;} .heart,.tulip{font-size:1.3rem;} }
   @media (max-width:480px){ header{font-size:1.3rem;padding:1rem;} .carousel-container{max-width:95vw;} .carousel-item img,.carousel-item video{max-height:60vh;} .message{font-size:0.95rem;} .heart,.tulip{font-size:1.1rem;} }
+  #music-btn {position: fixed;bottom: 20px;right: 20px;padding: 10px 15px;border: none;border-radius: 50px;background: #ffccd5;color: #660033;font-weight: bold;cursor: pointer;box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
 </style>
 </head>
 <body>
 
 <header>Feliz 1 Mês de Namoro ❤️</header>
+
+<audio id="bg-music" autoplay loop>
+  <source src="musica.mp3" type="audio/mp3">
+  Seu navegador não suporta áudio.
+</audio>
+
 
 <section>
   <h2>Eu amo</h2>
@@ -138,6 +145,11 @@
   });
 
   showImage(0);
+  
+  // --- script da música ---
+  const music = document.getElementById('bg-music');
+  const btn = document.getElementById('music-btn');
+  btn.addEventListener('click', () => {if (music.paused) {music.play();btn.textContent = "🔊 Música";} else {music.pause();btn.textContent = "🔇 Música";}});
 </script>
 
 </body>
