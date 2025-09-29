@@ -30,16 +30,30 @@
   .tulip { color:white; }
   @keyframes fall { to { transform:translateY(100vh) rotate(360deg); opacity:0; } }
 
+   #music-btn {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 999px;
+    background: #ffccd5;
+    color: #660033;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    z-index: 1001;
+  }
+
   @media (max-width:768px){ header{font-size:1.6rem;padding:1.5rem;} .carousel-container{max-width:90vw;} .carousel-item img,.carousel-item video{max-height:70vh;} .message{font-size:1rem;padding:1rem;} .heart,.tulip{font-size:1.3rem;} }
   @media (max-width:480px){ header{font-size:1.3rem;padding:1rem;} .carousel-container{max-width:95vw;} .carousel-item img,.carousel-item video{max-height:60vh;} .message{font-size:0.95rem;} .heart,.tulip{font-size:1.1rem;} }
-  #music-btn {position: fixed;bottom: 20px;right: 20px;padding: 10px 15px;border: none;border-radius: 50px;background: #ffccd5;color: #660033;font-weight: bold;cursor: pointer;box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
 </style>
 </head>
 <body>
 
 <header>Feliz 1 Mês de Namoro ❤️</header>
 
-<audio id="bg-music" autoplay loop>
+<audio id="bg-music" preload="auto" loop playsinline>
   <source src="musica.mp3" type="audio/mp3">
   Seu navegador não suporta áudio.
 </audio>
@@ -86,6 +100,8 @@
 </section>
 
 <footer> 💕 Para sempre nós dois 💕</footer>
+
+<button id="music-btn">🔇 Música</button>
 
 <script>
   const carousel = document.getElementById('carousel');
@@ -146,10 +162,50 @@
 
   showImage(0);
   
-  // --- script da música ---
+  /* ===== MÚSICA DE FUNDO ===== */
   const music = document.getElementById('bg-music');
-  const btn = document.getElementById('music-btn');
-  btn.addEventListener('click', () => {if (music.paused) {music.play();btn.textContent = "🔊 Música";} else {music.pause();btn.textContent = "🔇 Música";}});
+  const musicBtn = document.getElementById('music-btn');
+
+  function updateMusicButton(){
+    try {
+      musicBtn.textContent = music && !music.paused ? '🔊 Música' : '🔇 Música';
+    } catch(e) {
+      musicBtn.textContent = '🔇 Música';
+    }
+  }
+
+  // Tentar tocar assim que houver uma interação do usuário (resolve a maioria dos bloqueios mobile)
+  function tryUnlockAudio(){
+    if(!music) return;
+    music.play().then(()=> {
+      updateMusicButton();
+    }).catch(()=> {
+      // autoplay bloqueado — usuário precisa clicar manualmente (botão)
+    });
+    // remover o listener — só precisamos da primeira interação
+    document.removeEventListener('pointerdown', tryUnlockAudio);
+    document.removeEventListener('touchstart', tryUnlockAudio);
+  }
+  document.addEventListener('pointerdown', tryUnlockAudio);
+  document.addEventListener('touchstart', tryUnlockAudio);
+
+  // Comportamento do botão
+  musicBtn.addEventListener('click', ()=>{
+    if(!music) return;
+    if(music.paused){
+      music.play().then(()=> {
+        updateMusicButton();
+      }).catch(()=> {
+        // se falhar, pode ser bloqueio — informar o usuário visualmente seria a próxima melhoria
+      });
+    } else {
+      music.pause();
+      updateMusicButton();
+    }
+  });
+
+  // Inicializa texto do botão conforme estado
+  updateMusicButton();
 </script>
 
 </body>
